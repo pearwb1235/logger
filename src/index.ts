@@ -74,10 +74,13 @@ export default class Logger<O = unknown, I extends LoggerInfo = LoggerInfo> {
   debug(message: string, callback: winston.LogCallback): void;
   debug(
     message: string,
-    meta: I & Omit<winston.LogEntry, "level">,
+    meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>,
     callback: winston.LogCallback
   ): void;
-  debug(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  debug(
+    message: string,
+    ...meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>[]
+  ): void;
   debug(infoObject: I): void;
   debug(...args: any[]) {
     this.logger.debug.call(this.logger, ...args);
@@ -86,10 +89,13 @@ export default class Logger<O = unknown, I extends LoggerInfo = LoggerInfo> {
   info(message: string, callback: winston.LogCallback): void;
   info(
     message: string,
-    meta: I & Omit<winston.LogEntry, "level">,
+    meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>,
     callback: winston.LogCallback
   ): void;
-  info(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  info(
+    message: string,
+    ...meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>[]
+  ): void;
   info(infoObject: I): void;
   info(...args: any[]) {
     this.logger.info.call(this.logger, ...args);
@@ -98,11 +104,16 @@ export default class Logger<O = unknown, I extends LoggerInfo = LoggerInfo> {
   warn(message: string, callback: winston.LogCallback): void;
   warn(
     message: string,
-    meta: I & Omit<winston.LogEntry, "level">,
+    meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>,
     callback: winston.LogCallback
   ): void;
-  warn(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
-  warn(message: I & Omit<winston.LogEntry, "level">): void;
+  warn(
+    message: string,
+    ...meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>[]
+  ): void;
+  warn(
+    message: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>
+  ): void;
   warn(...args: any[]) {
     this.logger.warn.call(this.logger, ...args);
   }
@@ -110,10 +121,13 @@ export default class Logger<O = unknown, I extends LoggerInfo = LoggerInfo> {
   error(message: string, callback: winston.LogCallback): void;
   error(
     message: string,
-    meta: I & Omit<winston.LogEntry, "level">,
+    meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>,
     callback: winston.LogCallback
   ): void;
-  error(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  error(
+    message: string,
+    ...meta: Partial<Omit<I, "level"> & Omit<winston.LogEntry, "level">>[]
+  ): void;
   error(infoObject: I): void;
   error(...args: any[]) {
     this.logger.error.call(this.logger, ...args);
