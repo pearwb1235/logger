@@ -52,7 +52,7 @@ export default class Logger<O = unknown, I extends LoggerInfo = LoggerInfo> {
         if (typeof formatHandler === "function")
           return formatHandler(message, info, option);
         if (Array.isArray(formatHandler))
-          return message + this.getFormatHandlers(formatHandlers, info, option);
+          return message + this.getFormatHandlers(formatHandler, info, option);
         return message + formatHandler.toString();
       },
       ""
