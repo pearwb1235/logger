@@ -1,6 +1,6 @@
 {
   "name": "@pearwb/logger",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Winston-based logger",
   "main": "./dist/index.js",
   "exports": "./dist/index.js",

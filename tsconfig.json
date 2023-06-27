@@ -5,6 +5,7 @@
     "downlevelIteration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
     "outDir": "dist",
     "paths": {
       "~/*": ["./src/*"],

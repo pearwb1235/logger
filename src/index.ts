@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 import * as winston from "winston";
 
 export type LoggerTransport = winston.transport | winston.transport[];
