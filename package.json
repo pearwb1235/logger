@@ -1,6 +1,6 @@
 {
   "name": "@pearwb/logger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Winston-based logger",
   "main": "dist",
   "scripts": {
@@ -46,6 +46,8 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@babel/runtime": "^7.21.5"
+    "@babel/runtime": "^7.21.5",
+    "dayjs": "^1.11.8",
+    "winston": "^3.9.0"
   }
 }
