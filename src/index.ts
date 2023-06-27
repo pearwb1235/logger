@@ -36,22 +36,6 @@ export default class Logger<O = unknown> {
     ];
   }
 
-  get debug() {
-    return this.logger.debug;
-  }
-
-  get info() {
-    return this.logger.info;
-  }
-
-  get warn() {
-    return this.logger.warn;
-  }
-
-  get error() {
-    return this.logger.error;
-  }
-
   protected isDebug() {
     return (
       !("NODE_ENV" in process.env) ||
@@ -90,5 +74,41 @@ export default class Logger<O = unknown> {
 
   protected messageFormat(message: string, info: LoggerInfo) {
     return message + info.message.toString();
+  }
+
+  debug(message: string, callback: winston.LogCallback);
+  debug(message: string, meta: any, callback: winston.LogCallback);
+  debug(message: string, ...meta: any[]);
+  debug(message: any);
+  debug(infoObject: object);
+  debug(...args: any[]) {
+    return this.logger.debug.call(this.logger, ...args);
+  }
+
+  info(message: string, callback: winston.LogCallback);
+  info(message: string, meta: any, callback: winston.LogCallback);
+  info(message: string, ...meta: any[]);
+  info(message: any);
+  info(infoObject: object);
+  info(...args: any[]) {
+    return this.logger.info.call(this.logger, ...args);
+  }
+
+  warn(message: string, callback: winston.LogCallback);
+  warn(message: string, meta: any, callback: winston.LogCallback);
+  warn(message: string, ...meta: any[]);
+  warn(message: any);
+  warn(infoObject: object);
+  warn(...args: any[]) {
+    return this.logger.warn.call(this.logger, ...args);
+  }
+
+  error(message: string, callback: winston.LogCallback);
+  error(message: string, meta: any, callback: winston.LogCallback);
+  error(message: string, ...meta: any[]);
+  error(message: any);
+  error(infoObject: object);
+  error(...args: any[]) {
+    return this.logger.error.call(this.logger, ...args);
   }
 }
