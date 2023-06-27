@@ -5,18 +5,18 @@ import * as winston from "winston";
 export type LoggerTransport = winston.transport | winston.transport[];
 export type LoggerInfo = winston.Logform.TransformableInfo;
 
-export type FormatHandler<O> =
+export type FormatHandler<O, I> =
   | string
-  | FormatHandlerFunction<O>
-  | FormatHandler<O>[];
-export type FormatHandlerFunction<O> =
+  | FormatHandlerFunction<O, I>
+  | FormatHandler<O, I>[];
+export type FormatHandlerFunction<O, I> =
   | ((message: string) => string)
-  | ((message: string, info: LoggerInfo) => string)
-  | ((message: string, info: LoggerInfo, option?: O) => string);
+  | ((message: string, info: I) => string)
+  | ((message: string, info: I, option?: O) => string);
 
-export default class Logger<O = unknown> {
+export default class Logger<O = unknown, I extends LoggerInfo = LoggerInfo> {
   private logger: winston.Logger;
-  protected formatHandlers: FormatHandler<O>[];
+  protected formatHandlers: FormatHandler<O, I>[];
   constructor(
     transports: LoggerTransport = [new winston.transports.Console()]
   ) {
@@ -27,11 +27,10 @@ export default class Logger<O = unknown> {
     this.logger = winston.createLogger({
       level: this.isDebug() ? "debug" : "info",
       transports,
-      format: winston.format.printf((info) => this.formatOutput(info)),
+      format: winston.format.printf((info) => this.formatOutput(info as I)),
     });
     this.formatHandlers = [
       ["[", this.timestampFormat, "]", " "],
-      ["[", this.levelFormat, "]", " "],
       this.messageFormat,
     ];
   }
@@ -44,12 +43,12 @@ export default class Logger<O = unknown> {
   }
 
   protected getFormatHandlers(
-    formatHandlers: FormatHandler<O>[],
-    info: LoggerInfo,
+    formatHandlers: FormatHandler<O, I>[],
+    info: I,
     option?: O
   ) {
     return formatHandlers.reduce<string>(
-      (message: string, formatHandler: FormatHandler<O>) => {
+      (message: string, formatHandler: FormatHandler<O, I>) => {
         if (typeof formatHandler === "function")
           return formatHandler(message, info, option);
         if (Array.isArray(formatHandler))
@@ -60,7 +59,7 @@ export default class Logger<O = unknown> {
     );
   }
 
-  protected formatOutput(info: LoggerInfo, option?: O) {
+  protected formatOutput(info: I, option?: O) {
     return this.getFormatHandlers(this.formatHandlers, info, option);
   }
 
@@ -68,47 +67,55 @@ export default class Logger<O = unknown> {
     return message + dayjs().format("YYYY/MM/DD HH:mm:ss");
   }
 
-  protected levelFormat(message: string, info: LoggerInfo) {
-    return message + info.level.toUpperCase();
-  }
-
-  protected messageFormat(message: string, info: LoggerInfo) {
+  protected messageFormat(message: string, info: I) {
     return message + info.message.toString();
   }
 
-  debug(message: string, callback: winston.LogCallback);
-  debug(message: string, meta: any, callback: winston.LogCallback);
-  debug(message: string, ...meta: any[]);
-  debug(message: any);
-  debug(infoObject: object);
+  debug(message: string, callback: winston.LogCallback): void;
+  debug(
+    message: string,
+    meta: I & Omit<winston.LogEntry, "level">,
+    callback: winston.LogCallback
+  ): void;
+  debug(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  debug(infoObject: I): void;
   debug(...args: any[]) {
-    return this.logger.debug.call(this.logger, ...args);
+    this.logger.debug.call(this.logger, ...args);
   }
 
-  info(message: string, callback: winston.LogCallback);
-  info(message: string, meta: any, callback: winston.LogCallback);
-  info(message: string, ...meta: any[]);
-  info(message: any);
-  info(infoObject: object);
+  info(message: string, callback: winston.LogCallback): void;
+  info(
+    message: string,
+    meta: I & Omit<winston.LogEntry, "level">,
+    callback: winston.LogCallback
+  ): void;
+  info(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  info(infoObject: I): void;
   info(...args: any[]) {
-    return this.logger.info.call(this.logger, ...args);
+    this.logger.info.call(this.logger, ...args);
   }
 
-  warn(message: string, callback: winston.LogCallback);
-  warn(message: string, meta: any, callback: winston.LogCallback);
-  warn(message: string, ...meta: any[]);
-  warn(message: any);
-  warn(infoObject: object);
+  warn(message: string, callback: winston.LogCallback): void;
+  warn(
+    message: string,
+    meta: I & Omit<winston.LogEntry, "level">,
+    callback: winston.LogCallback
+  ): void;
+  warn(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  warn(message: I & Omit<winston.LogEntry, "level">): void;
   warn(...args: any[]) {
-    return this.logger.warn.call(this.logger, ...args);
+    this.logger.warn.call(this.logger, ...args);
   }
 
-  error(message: string, callback: winston.LogCallback);
-  error(message: string, meta: any, callback: winston.LogCallback);
-  error(message: string, ...meta: any[]);
-  error(message: any);
-  error(infoObject: object);
+  error(message: string, callback: winston.LogCallback): void;
+  error(
+    message: string,
+    meta: I & Omit<winston.LogEntry, "level">,
+    callback: winston.LogCallback
+  ): void;
+  error(message: string, ...meta: I & Omit<winston.LogEntry, "level">[]): void;
+  error(infoObject: I): void;
   error(...args: any[]) {
-    return this.logger.error.call(this.logger, ...args);
+    this.logger.error.call(this.logger, ...args);
   }
 }
