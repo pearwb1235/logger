@@ -5,15 +5,18 @@ import * as winston from "winston";
 export type LoggerTransport = winston.transport | winston.transport[];
 export type LoggerInfo = winston.Logform.TransformableInfo;
 
-export type FormatHandler = string | FormatHandlerFunction | FormatHandler[];
-export type FormatHandlerFunction =
+export type FormatHandler<O> =
+  | string
+  | FormatHandlerFunction<O>
+  | FormatHandler<O>[];
+export type FormatHandlerFunction<O> =
   | ((message: string) => string)
   | ((message: string, info: LoggerInfo) => string)
-  | ((message: string, info: LoggerInfo, option: unknown) => string);
+  | ((message: string, info: LoggerInfo, option?: O) => string);
 
-export default class Logger {
+export default class Logger<O = unknown> {
   private logger: winston.Logger;
-  protected formatHandlers: FormatHandler[];
+  protected formatHandlers: FormatHandler<O>[];
   constructor(
     transports: LoggerTransport = [new winston.transports.Console()]
   ) {
@@ -24,9 +27,7 @@ export default class Logger {
     this.logger = winston.createLogger({
       level: this.isDebug() ? "debug" : "info",
       transports,
-      format: winston.format.printf((info) =>
-        this.formatOutput(info, { color: true })
-      ),
+      format: winston.format.printf((info) => this.formatOutput(info)),
     });
     this.formatHandlers = [
       ["[", this.timestampFormat, "]", " "],
@@ -59,12 +60,12 @@ export default class Logger {
   }
 
   protected getFormatHandlers(
-    formatHandlers: FormatHandler[],
+    formatHandlers: FormatHandler<O>[],
     info: LoggerInfo,
-    option: unknown
+    option?: O
   ) {
     return formatHandlers.reduce<string>(
-      (message: string, formatHandler: FormatHandler) => {
+      (message: string, formatHandler: FormatHandler<O>) => {
         if (typeof formatHandler === "function")
           return formatHandler(message, info, option);
         if (Array.isArray(formatHandler))
@@ -75,8 +76,8 @@ export default class Logger {
     );
   }
 
-  protected formatOutput(info: LoggerInfo, option?: unknown) {
-    return this.getFormatHandlers(this.formatHandlers, info, option || {});
+  protected formatOutput(info: LoggerInfo, option?: O) {
+    return this.getFormatHandlers(this.formatHandlers, info, option);
   }
 
   protected timestampFormat(message: string) {
