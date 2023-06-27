@@ -5,10 +5,11 @@ import * as winston from "winston";
 export type LoggerTransport = winston.transport | winston.transport[];
 export type LoggerInfo = winston.Logform.TransformableInfo;
 
-export type FormatHandler =
-  | string
-  | ((message: string, info: LoggerInfo, option: unknown) => string)
-  | FormatHandler[];
+export type FormatHandler = string | FormatHandlerFunction | FormatHandler[];
+export type FormatHandlerFunction =
+  | ((message: string) => string)
+  | ((message: string, info: LoggerInfo) => string)
+  | ((message: string, info: LoggerInfo, option: unknown) => string);
 
 export default class Logger {
   private logger: winston.Logger;
@@ -74,19 +75,19 @@ export default class Logger {
     );
   }
 
-  protected formatOutput(info, option) {
+  protected formatOutput(info: LoggerInfo, option?: unknown) {
     return this.getFormatHandlers(this.formatHandlers, info, option || {});
   }
 
-  protected timestampFormat(message) {
+  protected timestampFormat(message: string) {
     return message + dayjs().format("YYYY/MM/DD HH:mm:ss");
   }
 
-  protected levelFormat(message: string, info) {
+  protected levelFormat(message: string, info: LoggerInfo) {
     return message + info.level.toUpperCase();
   }
 
-  protected messageFormat(message: string, info) {
+  protected messageFormat(message: string, info: LoggerInfo) {
     return message + info.message.toString();
   }
 }
